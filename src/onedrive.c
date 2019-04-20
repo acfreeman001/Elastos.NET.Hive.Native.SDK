@@ -192,7 +192,7 @@ static int hive_1drv_move(hive_t *hive, const char *old, const char *new)
         }
     }
 
-    req_body_str = cJSON_Print(req_body);
+    req_body_str = cJSON_PrintUnformatted(req_body);
     cJSON_Delete(req_body);
     if (!req_body_str)
         return -1;
@@ -337,7 +337,7 @@ static int hive_1drv_copy(hive_t *hive, const char *src_path, const char *dest_p
         }
     }
 
-    req_body_str = cJSON_Print(req_body);
+    req_body_str = cJSON_PrintUnformatted(req_body);
     cJSON_Delete(req_body);
     if (!req_body_str)
         return -1;
@@ -469,10 +469,10 @@ static int hive_1drv_list(hive_t *hive, const char *path, char **result)
             continue;
         }
 
-        *result = cJSON_Print(resp);
+        *result = cJSON_PrintUnformatted(resp);
         cJSON_Delete(resp);
         cJSON_Delete(resp_part);
-        return *result ? 0 : 1;
+        return *result ? 0 : -1;
     }
 #undef RESP_BODY_MAX_SZ
 }
@@ -527,7 +527,7 @@ static int hive_1drv_mkdir(hive_t *hive, const char *path)
         return -1;
     }
 
-    req_body_str = cJSON_Print(req_body);
+    req_body_str = cJSON_PrintUnformatted(req_body);
     cJSON_Delete(req_body);
     if (!req_body_str)
         return -1;

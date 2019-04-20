@@ -102,7 +102,7 @@ static char *encode_profile(oauth_cli_t *cli)
         goto end;
     cJSON_AddItemToObject(json, "refresh_token", refresh_token);
 
-    json_str = cJSON_Print(json);
+    json_str = cJSON_PrintUnformatted(json);
 
 end:
     if (json)
