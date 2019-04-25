@@ -721,6 +721,13 @@ int oauth_cli_authorize(oauth_cli_t *cli)
     int rc;
 
     pthread_mutex_lock(&cli->lock);
+    
+    if (cli->state >= OAUTH_CLI_STATE_AUTHORIZED &&
+        cli->state <= OAUTH_CLI_STATE_REFRESHING) {
+       pthread_mutex_unlock(&cli->lock);
+       return 0;
+    }
+
     if (cli->state != OAUTH_CLI_STATE_UNAUTHORIZED) {
         pthread_mutex_unlock(&cli->lock);
         return -1;
