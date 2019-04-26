@@ -82,7 +82,7 @@ static int hive_1drv_stat(hive_t *hive, const char *path, char **result)
         rc = snprintf(url, sizeof(url), "%s/drive/root:%s:", ONEDRV_ROOT, path_esc);
         http_client_memory_free(path_esc);
     }
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     http_cli = http_client_new();
@@ -157,7 +157,7 @@ static int hive_1drv_move(hive_t *hive, const char *old, const char *new)
         rc = snprintf(url, sizeof(url), "%s/drive/root:%s:", ONEDRV_ROOT, old_esc);
         http_client_memory_free(old_esc);
     }
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     req_body = cJSON_CreateObject();
@@ -172,7 +172,7 @@ static int hive_1drv_move(hive_t *hive, const char *old, const char *new)
         else
             rc = snprintf(parent_dir, sizeof(parent_dir), "/drive/root:%s/%s",
                           !strcmp(src_dir, "/") ? "" : src_dir, dst_dir);
-        if (rc >= sizeof(parent_dir)) {
+        if (rc < 0 || rc >= sizeof(parent_dir)) {
             cJSON_Delete(req_body);
             return -1;
         }
@@ -240,7 +240,7 @@ static int hive_1drv_delete(hive_t *hive, const char *path)
         return -1;
     rc = snprintf(url, sizeof(url), "%s/drive/root:%s:", ONEDRV_ROOT, path_esc);
     http_client_memory_free(path_esc);
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     http_cli = http_client_new();
@@ -302,7 +302,7 @@ static int hive_1drv_copy(hive_t *hive, const char *src_path, const char *dest_p
         rc = snprintf(url, sizeof(url), "%s/drive/root:%s:/copy", ONEDRV_ROOT, src_path_esc);
         http_client_memory_free(src_path_esc);
     }
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     req_body = cJSON_CreateObject();
@@ -317,7 +317,7 @@ static int hive_1drv_copy(hive_t *hive, const char *src_path, const char *dest_p
         else
             rc = snprintf(parent_dir, sizeof(parent_dir), "/drive/root:%s/%s",
                 !strcmp(src_dir, "/") ? "" : src_dir, dst_dir);
-        if (rc >= sizeof(parent_dir)) {
+        if (rc < 0 || rc >= sizeof(parent_dir)) {
             cJSON_Delete(req_body);
             return -1;
         }
@@ -393,7 +393,7 @@ static int hive_1drv_list(hive_t *hive, const char *path, char **result)
         rc = snprintf(url, sizeof(url), "%s/drive/root:%s:/children", ONEDRV_ROOT, path_esc);
         http_client_memory_free(path_esc);
     }
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     resp = cJSON_CreateObject();
@@ -463,7 +463,7 @@ static int hive_1drv_list(hive_t *hive, const char *path, char **result)
 
         if (next_link) {
             rc = snprintf(url, sizeof(url), "%s", next_link->valuestring);
-            if (rc >= sizeof(url)) {
+            if (rc < 0 || rc >= sizeof(url)) {
                 cJSON_Delete(resp);
                 cJSON_Delete(resp_part);
                 return -1;
@@ -509,7 +509,7 @@ static int hive_1drv_mkdir(hive_t *hive, const char *path)
         rc = snprintf(url, sizeof(url), "%s/drive/root:%s:/children", ONEDRV_ROOT, dir_esc);
         http_client_memory_free(dir_esc);
     }
-    if (rc >= sizeof(url))
+    if (rc < 0 || rc >= sizeof(url))
         return -1;
 
     req_body = cJSON_CreateObject();

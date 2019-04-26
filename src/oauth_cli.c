@@ -542,7 +542,7 @@ static int get_auth_code(oauth_cli_t *cli)
 
     rc = snprintf(buf, sizeof(buf), "%s:%s%s",
         cli->opt.redirect_url, cli->opt.redirect_port, cli->opt.redirect_path);
-    assert(rc < sizeof(buf));
+    assert(rc > 0 && rc < sizeof(buf));
 
     http_client_set_query(http_cli, "client_id", cli->opt.cli_id);
     http_client_set_query(http_cli, "scope", cli->opt.scope);
@@ -791,7 +791,7 @@ retry:
 
     rc = snprintf(auth_hdr, sizeof(auth_hdr), "%s %s",
         cli->svr_resp.token_type, cli->svr_resp.access_token);
-    if (rc >= sizeof(auth_hdr)) {
+    if (rc < 0 || rc >= sizeof(auth_hdr)) {
         pthread_mutex_unlock(&cli->lock);
         return -1;
     }
