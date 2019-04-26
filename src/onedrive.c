@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <libgen.h>
 #include <cjson/cJSON.h>
+#ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
+#endif
 #include <string.h>
 
 #include "oauth_cli.h"
@@ -17,7 +19,7 @@ struct hive_onedrive {
     oauth_cli_t *oauth;
 };
 #define authorize base.authorize
-#define mkdir     base.mkdir
+#define makedir   base.makedir
 #define list      base.list
 #define copy      base.copy
 #define delete    base.delete
@@ -587,7 +589,7 @@ hive_t *hive_1drv_new(const hive_opt_t *base_opt)
     }
 
     onedrv->authorize = hive_1drv_authorize;
-    onedrv->mkdir     = hive_1drv_mkdir;
+    onedrv->makedir     = hive_1drv_mkdir;
     onedrv->list      = hive_1drv_list;
     onedrv->copy      = hive_1drv_copy;
     onedrv->delete    = hive_1drv_delete;
