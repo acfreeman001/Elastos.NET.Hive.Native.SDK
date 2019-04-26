@@ -1,6 +1,6 @@
 diff -ruN curl-7.64.0/lib/config-win32.h curl-7.64.0-mod/lib/config-win32.h
 --- curl-7.64.0/lib/config-win32.h	2018-12-17 15:03:06.000000000 +0800
-+++ curl-7.64.0-mod/lib/config-win32.h	2019-03-06 17:20:53.000000000 +0800
++++ curl-7.64.0-mod/lib/config-win32.h	2019-04-27 10:00:19.000000000 +0800
 @@ -740,4 +740,6 @@
  #  define ENABLE_IPV6 1
  #endif
@@ -8,9 +8,82 @@ diff -ruN curl-7.64.0/lib/config-win32.h curl-7.64.0-mod/lib/config-win32.h
 +#define HTTP_ONLY
 +
  #endif /* HEADER_CURL_CONFIG_WIN32_H */
+diff -ruN curl-7.64.0/lib/slist.c curl-7.64.0-mod/lib/slist.c
+--- curl-7.64.0/lib/slist.c	2018-11-22 06:48:11.000000000 +0800
++++ curl-7.64.0-mod/lib/slist.c	2019-04-27 12:42:46.000000000 +0800
+@@ -23,6 +23,7 @@
+ #include "curl_setup.h"
+ 
+ #include <curl/curl.h>
++#include <string.h>
+ 
+ #include "slist.h"
+ 
+@@ -47,6 +48,35 @@
+   return item;
+ }
+ 
++/* returns existing node with same name as the header in data in linked list */
++static struct curl_slist *slist_get_existing(struct curl_slist *list, char *data,
++                                             struct curl_slist **last)
++{
++  struct curl_slist     *item;
++  struct curl_slist     *prev;
++  char *colon;
++
++  /* if caller passed us a NULL, return now */
++  if(!list)
++    return NULL;
++
++  colon = strchr(data, ':');
++  if (!colon)
++      return NULL;
++
++  /* loop through to find the item */
++  item = list;
++  prev = NULL;
++  while(item) {
++    if (!strncmp(item->data, data, colon - data + 2))
++        return item;
++    prev = item;
++    item = item->next;
++  }
++  *last = prev;
++  return NULL;
++}
++
+ /*
+  * Curl_slist_append_nodup() appends a string to the linked list. Rather than
+  * copying the string in dynamic storage, it takes its ownership. The string
+@@ -60,9 +90,17 @@
+ {
+   struct curl_slist     *last;
+   struct curl_slist     *new_item;
++  struct curl_slist     *existing;
+ 
+   DEBUGASSERT(data);
+ 
++  existing = slist_get_existing(list, data, &last);
++  if (existing) {
++      free(existing->data);
++      existing->data = data;
++      return list;
++  }
++
+   new_item = malloc(sizeof(struct curl_slist));
+   if(!new_item)
+     return NULL;
+@@ -74,7 +112,6 @@
+   if(!list)
+     return new_item;
+ 
+-  last = slist_get_last(list);
+   last->next = new_item;
+   return list;
+ }
 diff -ruN curl-7.64.0/winbuild/Makefile.vc curl-7.64.0-mod/winbuild/Makefile.vc
 --- curl-7.64.0/winbuild/Makefile.vc	2018-10-27 18:00:54.000000000 +0800
-+++ curl-7.64.0-mod/winbuild/Makefile.vc	2019-03-06 17:59:39.000000000 +0800
++++ curl-7.64.0-mod/winbuild/Makefile.vc	2019-04-27 10:00:19.000000000 +0800
 @@ -198,55 +198,55 @@
  SSH2     = static
  !ENDIF
@@ -117,7 +190,7 @@ diff -ruN curl-7.64.0/winbuild/Makefile.vc curl-7.64.0-mod/winbuild/Makefile.vc
  
 diff -ruN curl-7.64.0/winbuild/MakefileBuild.vc curl-7.64.0-mod/winbuild/MakefileBuild.vc
 --- curl-7.64.0/winbuild/MakefileBuild.vc	2019-02-05 22:00:12.000000000 +0800
-+++ curl-7.64.0-mod/winbuild/MakefileBuild.vc	2019-03-06 17:19:34.000000000 +0800
++++ curl-7.64.0-mod/winbuild/MakefileBuild.vc	2019-04-27 10:00:19.000000000 +0800
 @@ -502,7 +502,7 @@
  
  EXE_OBJS = $(CURL_OBJS) $(CURL_DIROBJ)\curl.res
