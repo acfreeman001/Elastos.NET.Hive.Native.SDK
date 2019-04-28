@@ -3,8 +3,9 @@ project(curl)
 include(HiveDefaults)
 include(ExternalProject)
 
-set(PATCH_ARGS -s -p1 < "${CMAKE_CURRENT_LIST_DIR}/curl.patch")
 if(WIN32)
+    set(PATCH_ARGS -s -p1 < "${CMAKE_CURRENT_LIST_DIR}/curl.patch")
+
     set(CONFIGURE_CMD "echo")
     set(CONFIGURE_ARGS "Done")
 
@@ -24,6 +25,9 @@ if(WIN32)
         copy "${OUTPUT_PATH}\\lib\\libcurl_a.lib" "${HIVE_INT_DIST_DIR}\\lib\\curl.lib" /y)
 else()
     include(ExternalConfigureArgs)
+
+    set(PATCH_EXE "echo")
+    set(PATCH_ARGS "Done")
 
     set(CONFIGURE_CMD "./configure")
     set(CONFIGURE_ARGS

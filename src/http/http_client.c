@@ -380,7 +380,7 @@ int http_client_set_query(http_client_t *client,
     sprintf(query, "%s=%s", name, value);
 
     code = curl_url_set(client->url, CURLUPART_QUERY, query,
-                        CURLU_URLENCODE | CURLU_APPENDQUERY);
+                CURLU_URLENCODE | CURLU_APPENDQUERY);
     if (code != CURLUE_OK)  {
         // TODO;
         return  __curlucode_to_error(code);
