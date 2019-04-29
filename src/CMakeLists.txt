@@ -77,17 +77,16 @@ endif()
 
 set(LIBS
     crystal
-    libcurl)
+    libcurl
+    cjson)
 
 if(WIN32)
 set(LIBS
     ${LIBS}
-    libcjson
     pthread)
 else()
 set(LIBS
-    ${LIBS}
-    cjson)
+    ${LIBS})
 endif()
 
 add_definitions(-DHIVE_BUILD)
