@@ -11,7 +11,7 @@
 #endif
 #include <string.h>
 
-#include "oauth_cli.h"
+#include "oauth_client.h"
 #include "http_client.h"
 #include "hive_impl.h"
 #include "onedrive.h"

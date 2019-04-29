@@ -23,7 +23,7 @@
 #endif
 
 #include "http_client.h"
-#include "oauth_cli.h"
+#include "oauth_client.h"
 #include "sandbird.h"
 
 typedef struct server_response {

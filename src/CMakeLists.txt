@@ -41,7 +41,7 @@ configure_file(
 
 set(SRC
     hive.c
-    oauth_cli.c
+    oauth_client.c
     onedrive.c
     sandbird.c
     http/http_client.c)
